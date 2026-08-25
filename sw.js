@@ -16,7 +16,7 @@
  * navegador compara este archivo byte a byte y, si sale idéntico, da por hecho
  * que no hay nada nuevo y jamás reemplaza la copia guardada.
  */
-const VERSION = "cm-printquote-20260825150705"
+const VERSION = "cm-printquote-20260825151118"
 const ARCHIVOS = [
   "./",
   "./manifest.webmanifest",
