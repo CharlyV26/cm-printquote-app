@@ -11,7 +11,12 @@
  * sin reinstalar nada.
  */
 
-const VERSION = "cm-printquote-v1"
+/**
+ * La sella el publicador en cada subida. Tiene que cambiar SIEMPRE: el
+ * navegador compara este archivo byte a byte y, si sale idéntico, da por hecho
+ * que no hay nada nuevo y jamás reemplaza la copia guardada.
+ */
+const VERSION = "cm-printquote-20260825150310"
 const ARCHIVOS = [
   "./",
   "./manifest.webmanifest",
