@@ -16,7 +16,7 @@
  * navegador compara este archivo byte a byte y, si sale idéntico, da por hecho
  * que no hay nada nuevo y jamás reemplaza la copia guardada.
  */
-const VERSION = "cm-printquote-20260825192123"
+const VERSION = "cm-printquote-20260825193942"
 const ARCHIVOS = [
   "./",
   "./manifest.webmanifest",
@@ -55,10 +55,30 @@ self.addEventListener("fetch", (evento) => {
   // la red siempre, no responder con un valor guardado de la semana pasada.
   if (url.origin !== self.location.origin) return
 
-  // Al navegar se sirve la página guardada; si no hay, se va a la red.
+  /*
+   * Al navegar se sirve la página guardada Y se pide la nueva en paralelo.
+   *
+   * Esa segunda mitad faltaba, y es la que importa: la aplicación entera vive
+   * dentro de esta única página, así que sin pedirla de nuevo la copia
+   * guardada se volvía eterna. La versión nueva sólo entraba si el navegador
+   * se daba cuenta por su cuenta de que este archivo había cambiado — y
+   * mientras no se diera cuenta, no había forma de recibir un arreglo.
+   */
   if (peticion.mode === "navigate") {
     evento.respondWith(
-      caches.match("./").then((guardada) => guardada || fetch(peticion)),
+      caches.match("./").then((guardada) => {
+        const desdeLaRed = fetch(peticion)
+          .then((respuesta) => {
+            if (respuesta && respuesta.ok) {
+              const copia = respuesta.clone()
+              caches.open(VERSION).then((cache) => cache.put("./", copia))
+            }
+            return respuesta
+          })
+          .catch(() => guardada)
+
+        return guardada || desdeLaRed
+      }),
     )
     return
   }
